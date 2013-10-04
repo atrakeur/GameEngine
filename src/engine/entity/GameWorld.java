@@ -66,12 +66,12 @@ public class GameWorld {
 		}
 	}
 	
-	public Collection<Component> getComponents(Class<? extends Component> classType)
+	public <T extends Component> Collection<T> getComponents(Class<T> classType)
 	{
-		Collection<Component> list = new ArrayList<Component>();
+		Collection<T> list = new ArrayList<T>();
 		for(Entity e: entities)
 		{
-			Component c = e.getComponent(classType);
+			T c = e.getComponent(classType);
 			if(c != null)
 				list.add(c);
 		}

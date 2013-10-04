@@ -2,6 +2,7 @@ package engine.render;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -13,10 +14,9 @@ import org.lwjgl.opengl.GL11;
 
 import engine.core.IRenderer;
 import engine.entity.GameWorld;
+import engine.render.components.Camera;
 
-import net.usikkert.kouinject.annotation.Component;
-
-@Component
+@net.usikkert.kouinject.annotation.Component
 @Singleton
 /**
  * Manages the rendering in game
@@ -53,9 +53,10 @@ class Render implements IRenderer {
 	
 	public void update()
 	{
+		Collection<Camera> cameras = world.getComponents(Camera.class);
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0, 800, 0, 600, 1, -1);
+		GL11.glOrtho(0, 1, 0, 1, 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		
 		GL11.glColor3f(10, 10, 10);

@@ -112,11 +112,11 @@ public abstract class Entity {
 		
 	}
 	
-	public final Component getComponent(Class<? extends Component> classType)
+	public final <T extends Component> T getComponent(Class<T> classType)
 	{
 		for(Component c : components)
 			if(classType.isInstance(c))
-				return c;
+				return (T)c;
 		
 		return null;
 	}
