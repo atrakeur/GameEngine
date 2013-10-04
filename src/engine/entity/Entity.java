@@ -1,6 +1,7 @@
 package engine.entity;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * An abstract game entity
@@ -92,6 +93,15 @@ public abstract class Entity {
 		c.setParent(this);
 		c.onAttach();
 		
+	}
+	
+	public final Component getComponent(Class<? extends Component> classType)
+	{
+		for(Component c : components)
+			if(classType.isInstance(c))
+				return c;
+		
+		return null;
 	}
 	
 	/**

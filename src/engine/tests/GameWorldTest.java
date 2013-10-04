@@ -30,6 +30,20 @@ public class GameWorldTest {
 		assertFalse(c.isAttached());
 		assertEquals(null, c.getParent());
 	}
+	
+	@Test
+	public void testComponentGet()
+	{
+		//test empty world
+		GameWorld w = new GameWorld();
+		assertEquals(0, w.getComponents(DummyComponent.class).size());
+		
+		//test with one entity
+		Entity e = new DummyEntity();
+		e.addComponent(new DummyComponent());
+		w.addEntity(e);
+		assertEquals(1, w.getComponents(DummyComponent.class).size());
+	}
 
 	@Test
 	public void testEntity() 
@@ -53,6 +67,7 @@ public class GameWorldTest {
 		
 		//test destroying from entity
 		e.destroy();
+		w.clean();
 		assertEquals(0, w.getEntityCount());
 		assertFalse(e.hasParentWorld());
 		assertTrue(e.isDestroyed());
@@ -66,6 +81,7 @@ public class GameWorldTest {
 		
 		//test destroying from world
 		w.removeEntity(e);
+		w.clean();
 		assertEquals(0, w.getEntityCount());
 		assertFalse(e.hasParentWorld());
 		assertTrue(e.isDestroyed());
@@ -76,11 +92,13 @@ public class GameWorldTest {
 		w.addEntity(new DummyEntity());
 		for(int i = 0; i < w.getEntityCount(); i++)
 		{
-			assertFalse(w.getEntity(w.getEntityCount() - i).isDestroyed());
-			w.getEntity(w.getEntityCount() - i).destroy();
-			assertTrue(w.getEntity(w.getEntityCount() - i).isDestroyed());
+			assertFalse(w.getEntity(w.getEntityCount() - i - 1).isDestroyed());
+			w.getEntity(w.getEntityCount() - i - 1).destroy();
+			assertTrue(w.getEntity(w.getEntityCount() - i - 1).isDestroyed());
 		}
-		assertEquals()
+		assertEquals(3, w.getEntityCount());
+		w.clean();
+		assertEquals(0, w.getEntityCount());
 	}
 
 }

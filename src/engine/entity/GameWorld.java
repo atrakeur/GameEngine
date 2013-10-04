@@ -1,6 +1,7 @@
 package engine.entity;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 public class GameWorld {
@@ -51,7 +52,18 @@ public class GameWorld {
 			if(e.isDestroyed())
 				it.remove();
 		}
-				
+	}
+	
+	public Collection<Component> getComponents(Class<? extends Component> classType)
+	{
+		Collection<Component> list = new ArrayList<Component>();
+		for(Entity e: entities)
+		{
+			Component c = e.getComponent(classType);
+			if(c != null)
+				list.add(c);
+		}
+		return list;
 	}
 	
 }
