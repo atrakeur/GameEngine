@@ -54,17 +54,25 @@ class Render implements IRenderer {
 	public void update()
 	{
 		Collection<Camera> cameras = world.getComponents(Camera.class);
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		GL11.glOrtho(0, 1, 0, 1, 1, -1);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		
+		if(cameras.size() == 0)
+			throw new IllegalStateException("No camera found");
+		
+		for(Camera camera : cameras)
+		{
+			//setup viewport for each camera
+			GL11.glMatrixMode(GL11.GL_PROJECTION);
+			GL11.glLoadIdentity();
+			GL11.glOrtho((double)0, (double)camera.getScreen().x, (double)0, (double)camera.getScreen().y, (double)camera.getNearPlane(), (double)camera.getFarPlane());
+			GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		}
 		
 		GL11.glColor3f(10, 10, 10);
 		GL11.glBegin(GL11.GL_QUADS);
-			GL11.glVertex2f(100, 100);
-			GL11.glVertex2f(200, 100);
-			GL11.glVertex2f(200, 200);
-			GL11.glVertex2f(100, 200);
+			GL11.glVertex2f(-1, -1);
+			GL11.glVertex2f( 1, -1);
+			GL11.glVertex2f( 1,  1);
+			GL11.glVertex2f(-1,  1);
 		GL11.glEnd();
 		
 		Display.update();
