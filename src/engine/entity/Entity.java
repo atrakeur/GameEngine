@@ -145,5 +145,9 @@ public abstract class Entity {
 	public void onDestroy()
 	{
 	}
+
+	public void update() 
+	{
+	}
 	
 }

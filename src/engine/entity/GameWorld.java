@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.inject.Singleton;
+
+@net.usikkert.kouinject.annotation.Component
+@Singleton
 public class GameWorld {
 	
 	private ArrayList<Entity> entities;
@@ -42,6 +46,14 @@ public class GameWorld {
 		
 		if(!e.isDestroyed())
 			e.destroy();
+	}
+	
+	public void update()
+	{
+		for(Entity e : entities)
+		{
+			e.update();
+		}
 	}
 	
 	public void clean()

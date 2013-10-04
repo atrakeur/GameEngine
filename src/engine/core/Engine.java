@@ -1,5 +1,6 @@
 package engine.core;
 
+import engine.entity.GameWorld;
 import net.usikkert.kouinject.DefaultInjector;
 import net.usikkert.kouinject.Injector;
 
@@ -20,6 +21,7 @@ public abstract class Engine {
 	private boolean run;
 	
 	private IRenderer render;
+	private GameWorld world;
 	
 	public Engine() throws Exception
 	{
@@ -35,12 +37,12 @@ public abstract class Engine {
 				this.getInjectionPaths());
 		
 		render = (IRenderer) inject(IRenderer.class);
+		world = (GameWorld) inject(GameWorld.class);
 		
 		//start the engine
 		this.onInit();
 		run = true;
 		render.create();
-		
 		this.onStart();
 		
 		while(run)
