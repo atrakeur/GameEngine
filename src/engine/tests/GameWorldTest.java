@@ -69,6 +69,18 @@ public class GameWorldTest {
 		assertEquals(0, w.getEntityCount());
 		assertFalse(e.hasParentWorld());
 		assertTrue(e.isDestroyed());
+		
+		//Test removing multiple entity while looping
+		w.addEntity(new DummyEntity());
+		w.addEntity(new DummyEntity());
+		w.addEntity(new DummyEntity());
+		for(int i = 0; i < w.getEntityCount(); i++)
+		{
+			assertFalse(w.getEntity(w.getEntityCount() - i).isDestroyed());
+			w.getEntity(w.getEntityCount() - i).destroy();
+			assertTrue(w.getEntity(w.getEntityCount() - i).isDestroyed());
+		}
+		assertEquals()
 	}
 
 }

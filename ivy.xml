@@ -4,7 +4,7 @@
     <info organisation="Atra" module="" status="integration">
 	</info>
 	<dependencies>
-		<dependency org="org.lwjgl.lwjgl" name="lwjgl" rev="2+"/>
+		<dependency org="org.lwjgl.lwjgl" name="lwjgl" rev="2.9.0" />
 		<dependency org="net.usikkert.kouinject" name="kouinject" rev="1.2"/>
 	</dependencies>
 </ivy-module>
