@@ -4,31 +4,52 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import engine.core.Container;
 import engine.entity.*;
 import engine.tests.beans.DummyComponent;
 import engine.tests.beans.DummyEntity;
 
 public class GameWorldTest {
 	
+	public void setUpBeforeClass()
+	{
+		Container.getInstance();
+	}
+	
 	@Test
 	public void testComponents()
 	{
 		Entity e = new DummyEntity();
-		assertEquals(0, e.getComponentCount());
+		assertEquals(1, e.getComponentCount());
 		
 		Component c = new DummyComponent();
 		assertFalse(c.isAttached());
 		assertEquals(null, c.getParent());
 		
 		e.addComponent(c);
-		assertEquals(1, e.getComponentCount());
+		assertEquals(2, e.getComponentCount());
 		assertTrue(c.isAttached());
 		assertEquals(e, c.getParent());
 		
 		e.removeComponent(c);
-		assertEquals(0, e.getComponentCount());
+		assertEquals(1, e.getComponentCount());
 		assertFalse(c.isAttached());
 		assertEquals(null, c.getParent());
+	}
+	
+	@Test
+	public void testComponentUnicity()
+	{
+		//Check that adding two component of the same type fail
+		Entity e = new DummyEntity();
+		e.addComponent(new DummyComponent());
+		try {
+			e.addComponent(new DummyComponent());
+			fail();
+		}
+		catch(IllegalArgumentException ex)
+		{
+		}
 	}
 	
 	@Test

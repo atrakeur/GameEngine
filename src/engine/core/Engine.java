@@ -17,7 +17,6 @@ public abstract class Engine {
 	
 	private static Engine instance;
 	
-	private Injector injector;
 	private boolean run;
 	
 	private IRenderer render;
@@ -31,13 +30,10 @@ public abstract class Engine {
 		
 		instance = this;
 		
-		//Setup injector
-		injector = new DefaultInjector(
-				"engine" +
-				this.getInjectionPaths());
+		Container.setInjectionPaths(this.getInjectionPaths());
 		
-		render = (IRenderer) inject(IRenderer.class);
-		world = (GameWorld) inject(GameWorld.class);
+		render = (IRenderer) Container.inject(IRenderer.class);
+		world = (GameWorld) Container.inject(GameWorld.class);
 		
 		//start the engine
 		this.onInit();
@@ -67,15 +63,6 @@ public abstract class Engine {
 			throw new IllegalStateException("Can't get instance of Engine before starting it");
 		
 		return instance;
-	}
-	
-	public static Injector getInjector()
-	{
-		return getInstance().injector;
-	}
-	
-	public static <T> T inject(Class<T> classType){
-		return getInjector().getBean(classType);
 	}
 	
 	public abstract String getInjectionPaths();

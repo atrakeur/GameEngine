@@ -3,6 +3,10 @@ package engine.entity;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import engine.core.Container;
+import engine.core.Engine;
+import engine.entity.components.Transform;
+
 /**
  * An abstract game entity
  * 
@@ -18,6 +22,7 @@ public abstract class Entity {
 	public Entity()
 	{
 		components = new ArrayList<Component>();
+		this.addComponent(Transform.class);
 	}
 	
 	/**
@@ -76,6 +81,15 @@ public abstract class Entity {
 		this.parentWorld = parentWorld;
 		this.isDestroyed = false;
 	}
+	
+	/**
+	 * Add a component of the given type to this entity
+	 * @param type
+	 */
+	public final void addComponent(Class<? extends Component> type)
+	{
+		addComponent(Container.inject(type));
+	}
 
 	/**
 	 * Add a component to this entity
@@ -88,6 +102,9 @@ public abstract class Entity {
 		
 		if (this.isDestroyed())
 			throw new IllegalStateException("Can't add a component to a destroyed entity");
+		
+		if(getComponent(c.getClass()) != null)
+			throw new IllegalArgumentException("Can't add component of type "+c.getClass()+" because entity allready has a "+getComponent(c.getClass()).getClass());
 		
 		components.add(c);
 		c.setParent(this);
