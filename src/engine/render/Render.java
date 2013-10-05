@@ -50,7 +50,7 @@ class Render implements IRenderer {
 	{
 		//TODO make it cross platform
 		System.setProperty("org.lwjgl.librarypath", new File("native/linux").getAbsolutePath());
-		Display.setDisplayMode(new DisplayMode(800, 600));
+		Display.setDisplayMode(new DisplayMode((int)resolution.x, (int)resolution.y));
 		Display.setTitle("Test");
 		Display.create();
 	}
@@ -105,6 +105,11 @@ class Render implements IRenderer {
 	public void destroy()
 	{
 		Display.destroy();
+	}
+	
+	public Vec2 getResolution()
+	{
+		return resolution;
 	}
 	
 }
