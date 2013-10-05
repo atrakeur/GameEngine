@@ -14,7 +14,14 @@ import org.lwjgl.opengl.GL11;
 
 import engine.core.IRenderer;
 import engine.entity.GameWorld;
-import engine.render.components.Camera;
+import engine.entity.components.Transform;
+import engine.gl.GLRotate;
+import engine.gl.GLScale;
+import engine.gl.GLTranslate;
+import engine.math.Vec2;
+import engine.render.components.CameraComponent;
+
+import static org.lwjgl.opengl.GL11.*;
 
 @net.usikkert.kouinject.annotation.Component
 @Singleton
@@ -29,13 +36,14 @@ class Render implements IRenderer {
 	@Inject
 	private GameWorld world;
 	
-	private ArrayList<engine.entity.Component> cameras;
-	private ArrayList<engine.entity.Component> renderers;
+	private final Vec2 resolution = new Vec2(800, 600);
+	
+	private final GLTranslate objectPosition = new GLTranslate();
+	private final GLScale objectScale = new GLScale();
+	private final GLRotate objectRotation = new GLRotate();
 
 	public Render()
 	{
-		cameras = new ArrayList<>();
-		renderers = new ArrayList<>();
 	}
 	
 	public void create() throws LWJGLException
@@ -43,6 +51,7 @@ class Render implements IRenderer {
 		//TODO make it cross platform
 		System.setProperty("org.lwjgl.librarypath", new File("native/linux").getAbsolutePath());
 		Display.setDisplayMode(new DisplayMode(800, 600));
+		Display.setTitle("Test");
 		Display.create();
 	}
 	
@@ -53,27 +62,42 @@ class Render implements IRenderer {
 	
 	public void update()
 	{
-		Collection<Camera> cameras = world.getComponents(Camera.class);
+		Collection<CameraComponent> cameras = world.getComponents(CameraComponent.class);
 		
 		if(cameras.size() == 0)
 			throw new IllegalStateException("No camera found");
 		
-		for(Camera camera : cameras)
+		for(CameraComponent camera : cameras)
 		{
 			//setup viewport for each camera
-			GL11.glMatrixMode(GL11.GL_PROJECTION);
-			GL11.glLoadIdentity();
-			GL11.glOrtho((double)0, (double)camera.getScreen().x, (double)0, (double)camera.getScreen().y, (double)camera.getNearPlane(), (double)camera.getFarPlane());
-			GL11.glMatrixMode(GL11.GL_MODELVIEW);
+			glMatrixMode(GL11.GL_PROJECTION);
+			glLoadIdentity();
+			float aspect = resolution.x / resolution.y;
+			glOrtho((double)-camera.getScreen().x/2 * aspect, (double)camera.getScreen().x/2 * aspect, (double)-camera.getScreen().y/2, (double)camera.getScreen().y/2, (double)camera.getNearPlane(), (double)camera.getFarPlane());
+			glMatrixMode(GL11.GL_MODELVIEW);
 		}
 		
-		GL11.glColor3f(10, 10, 10);
-		GL11.glBegin(GL11.GL_QUADS);
-			GL11.glVertex2f(-1, -1);
-			GL11.glVertex2f( 1, -1);
-			GL11.glVertex2f( 1,  1);
-			GL11.glVertex2f(-1,  1);
-		GL11.glEnd();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
+		Collection<RenderComponent> renderables = world.getComponents(RenderComponent.class);
+		
+		for(RenderComponent render : renderables)
+		{	
+			Transform transform = render.getParent().getComponent(Transform.class);
+			objectPosition.set(transform.getPosition());
+			objectScale.set(transform.getScale());
+			objectRotation.setRotation(transform.getRotation());
+			
+			objectPosition.setup();
+			objectScale.setup();
+			objectRotation.setup();
+			
+			render.render();
+			
+			objectRotation.teardown();
+			objectScale.teardown();
+			objectPosition.teardown();
+		}
 		
 		Display.update();
 	}

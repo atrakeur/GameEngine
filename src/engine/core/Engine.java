@@ -21,6 +21,8 @@ public abstract class Engine {
 	
 	private IRenderer render;
 	private GameWorld world;
+	private ILevel level;
+	private ILevel nextlevel;
 	
 	public Engine() throws Exception
 	{
@@ -32,31 +34,96 @@ public abstract class Engine {
 		
 		Container.setInjectionPaths(this.getInjectionPaths());
 		
-		render = (IRenderer) Container.inject(IRenderer.class);
-		world = (GameWorld) Container.inject(GameWorld.class);
+		initEngine();
 		
 		//start the engine
+		startEngine();
+		
+		while(run)
+		{
+			//need to quit?
+			if(render.isCloseRequested())
+				run = false;
+			
+			update();
+			
+			//wait for the next pass
+			try {Thread.sleep(10);} catch(Exception e){}
+		}
+		
+		level.onQuit();
+		this.onQuit();
+		render.destroy();
+	}
+	
+	/******************************************************
+	 * Internal parts
+	 ******************************************************/
+	
+	/**
+	 * Init the engine
+	 */
+	private void initEngine() {
+		render = (IRenderer) Container.inject(IRenderer.class);
+		world = (GameWorld) Container.inject(GameWorld.class);
+	}
+	
+	/**
+	 * Start the engine
+	 * @throws Exception
+	 */
+	private void startEngine() throws Exception {
 		this.onInit();
 		run = true;
 		render.create();
 		this.onStart();
 		
-		while(run)
-		{
-			if(render.isCloseRequested())
-				run = false;
-			
-			this.onUpdate();
-			
-			render.update();
-			
-			try {Thread.sleep(10);} catch(Exception e){}
-		}
+		if(nextlevel == null)
+			throw new IllegalStateException("A level must be set in onInit or onStart");
 		
-		this.onQuit();
-		render.destroy();
+		level = nextlevel;
+		level.onStart();
 	}
 	
+	/**
+	 * Called each frame to update
+	 */
+	private void update() {
+		//update all stuff
+		level.onUpdate();
+		this.onUpdate();
+		
+		//update build-in parts
+		render.update();
+		
+		//switch to another level if needed
+		if(nextlevel != null && nextlevel != level)
+		{
+			if(level != null)
+				level.onQuit();
+			world.clear();
+			level = nextlevel;
+			level.onStart();
+		}
+	}
+	
+	/******************************************************
+	 * Public API
+	 ******************************************************/
+	/**
+	 * Load a new level at the end of the current frame
+	 * @param level the level
+	 */
+	public void loadLevel(ILevel level) {
+		if(level == null)
+			throw new IllegalArgumentException("Level to load can't be null");
+		
+		nextlevel = level;
+	}
+	
+	/**
+	 * @return the instance of the engine
+	 */
 	public static Engine getInstance()
 	{
 		if(instance == null)
@@ -65,14 +132,33 @@ public abstract class Engine {
 		return instance;
 	}
 	
+	/******************************************************
+	 * User callbacks
+	 ******************************************************/
+	
+	/**
+	 * @return additionnal injection paths for the IoC
+	 */
 	public abstract String getInjectionPaths();
 	
+	/**
+	 * Called on engine init
+	 */
 	public abstract void onInit();
 	
+	/**
+	 * Called on engine start
+	 */
 	public void onStart() {}
 	
+	/**
+	 * Called each frame on engine update
+	 */
 	public void onUpdate() {}
 	
+	/**
+	 * Called jst before engine exiting
+	 */
 	public void onQuit() {}
 
 }

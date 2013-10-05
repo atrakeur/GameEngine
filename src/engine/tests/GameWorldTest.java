@@ -120,6 +120,14 @@ public class GameWorldTest {
 		assertEquals(3, w.getEntityCount());
 		w.clean();
 		assertEquals(0, w.getEntityCount());
+		
+		//Test clear all
+		w.addEntity(new DummyEntity());
+		w.addEntity(new DummyEntity());
+		w.addEntity(new DummyEntity());
+		assertEquals(3, w.getEntityCount());
+		w.clear();
+		assertEquals(0, w.getEntityCount());
 	}
 
 }

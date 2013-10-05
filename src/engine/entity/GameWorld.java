@@ -77,5 +77,14 @@ public class GameWorld {
 		}
 		return list;
 	}
+
+	public void clear() 
+	{
+		for(Entity e : entities)
+		{
+			removeEntity(e);
+		}
+		clean();
+	}
 	
 }

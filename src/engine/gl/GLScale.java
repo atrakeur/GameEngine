@@ -7,17 +7,17 @@ import org.lwjgl.opengl.GL11;
 
 import engine.math.Vec2;
 
-public class GLTranslate implements GLAction {
-	
-	private boolean setup;
+public class GLScale implements GLAction {
+
+private boolean setup;
 	
 	private final Vec2 vector;
 	
-	public GLTranslate(){
+	public GLScale(){
 		vector = new Vec2();
 	}
 
-	public GLTranslate(float x, float y) {
+	public GLScale(float x, float y) {
 		this();
 		this.vector.x = x;
 		this.vector.y = y;
@@ -28,7 +28,7 @@ public class GLTranslate implements GLAction {
 			throw new IllegalStateException("Can't setup GLAction twice");
 		
 		setup = true;
-		GL11.glTranslatef(vector.x, vector.y, 0);
+		GL11.glScalef(vector.x, vector.y, 1);
 	}
 
 	public void teardown() {
@@ -36,7 +36,7 @@ public class GLTranslate implements GLAction {
 			throw new IllegalStateException("Can't teardown a GLAction that isn't setuped");
 		
 		setup = false;
-		GL11.glTranslatef(-vector.x, -vector.y, 0);
+		GL11.glScalef(1/vector.x, 1/vector.y, 1);
 	}
 
 	public boolean isSetup() {

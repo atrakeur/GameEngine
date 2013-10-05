@@ -21,7 +21,7 @@ public class GameMain extends Engine{
 	}
 
 	public void onInit() {
-		
+		loadLevel(new MainLevel());
 	}
 
 }
