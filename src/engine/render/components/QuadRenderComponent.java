@@ -8,7 +8,7 @@ import engine.render.RenderComponent;
 public class QuadRenderComponent extends RenderComponent {
 
 	public void render() {
-		GL11.glColor3f(0.5f,0.5f,1.0f);
+		GL11.glColor4f(getColor().x,getColor().y,getColor().z, getColor().w);
 		
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glVertex2f(-0.5f,-0.5f);
