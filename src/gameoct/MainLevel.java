@@ -22,6 +22,7 @@ public class MainLevel implements ILevel{
 		e.addComponent(QuadRenderComponent.class);
 		e.getComponent(Transform.class).getPosition().set(40, 40);
 		e.getComponent(Transform.class).getScale().set(4, 4);
+		e.getComponent(Transform.class).setRotation(15);
 		e.addComponent(RigidbodyComponent.class);
 		world.addEntity(e);
 		
@@ -29,7 +30,6 @@ public class MainLevel implements ILevel{
 		e.addComponent(QuadRenderComponent.class);
 		e.getComponent(Transform.class).getPosition().set(-40, 40);
 		e.getComponent(Transform.class).getScale().set(4, 4);
-		e.getComponent(Transform.class).setRotation(45);
 		e.addComponent(RigidbodyComponent.class);
 		world.addEntity(e);
 		
@@ -37,12 +37,16 @@ public class MainLevel implements ILevel{
 		e.addComponent(QuadRenderComponent.class);
 		e.getComponent(Transform.class).getPosition().set(40, -40);
 		e.getComponent(Transform.class).getScale().set(8, 8);
+		e.addComponent(RigidbodyComponent.class);
+		e.getComponent(RigidbodyComponent.class).setStatic(true);
 		world.addEntity(e);
 		
 		e = new DummyEntity();
 		e.addComponent(QuadRenderComponent.class);
 		e.getComponent(Transform.class).getPosition().set(-40, -40);
 		e.getComponent(Transform.class).getScale().set(4, 4);
+		e.addComponent(RigidbodyComponent.class);
+		e.getComponent(RigidbodyComponent.class).setStatic(true);
 		world.addEntity(e);
 	}
 

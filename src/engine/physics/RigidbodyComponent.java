@@ -3,9 +3,11 @@ package engine.physics;
 import javax.inject.Inject;
 
 import org.jbox2d.collision.shapes.CircleShape;
+import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
+import org.jbox2d.dynamics.FixtureDef;
 
 import engine.entity.Component;
 import engine.entity.components.Transform;
@@ -15,9 +17,9 @@ import engine.math.Vec2;
 public class RigidbodyComponent extends Component {
 	
 	@Inject
-	Physics physics;
+	private Physics physics;
 	
-	Body body;
+	private Body body;
 	
 	public void onAttach() {
 		super.onAttach();
@@ -27,12 +29,31 @@ public class RigidbodyComponent extends Component {
 		def.type = BodyType.DYNAMIC;
 		def.angle = getRotation();
 		body = physics.addBody(def);
+		
+		PolygonShape rect = new PolygonShape();
+		rect.setAsBox(getScale().x/2, getScale().y/2);
+		
+		FixtureDef fd = new FixtureDef();
+		fd.shape = rect;
+		fd.density = 0.8f;
+		fd.friction = 0.5f;       
+		fd.restitution = 0.01f;
+		
+		body.createFixture(fd);
 	}
 
 	public void onDetach() {
 		super.onDetach();
 		
 		physics.removeBody(body);
+	}
+	
+	public void setStatic(boolean isStatic)
+	{
+		if(isStatic)
+			body.setType(BodyType.STATIC);
+		else
+			body.setType(BodyType.DYNAMIC);
 	}
 	
 	public void setupToPhysics()

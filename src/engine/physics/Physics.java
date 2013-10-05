@@ -26,7 +26,7 @@ public class Physics implements IPhysics {
 	
 	public Physics()
 	{
-		Vec2 gravity = new Vec2(0.0f, 0.0f);
+		Vec2 gravity = new Vec2(0.0f, -0.09f);
 		physicsworld = new World(gravity.toJBox2d(), true);
 	}
 	
