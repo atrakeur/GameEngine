@@ -39,4 +39,8 @@ public class Vec2 extends Vector2f {
 		return new org.jbox2d.common.Vec2(this.x, this.y);
 	}
 
+	public void fromJBox2d(org.jbox2d.common.Vec2 position) {
+		set(position.x, position.y);
+	}
+
 }

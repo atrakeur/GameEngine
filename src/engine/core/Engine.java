@@ -21,6 +21,8 @@ public abstract class Engine {
 	
 	private IRenderer render;
 	private GameWorld world;
+	private IPhysics physics;
+	
 	private ILevel level;
 	private ILevel nextlevel;
 	
@@ -66,6 +68,7 @@ public abstract class Engine {
 	private void initEngine() {
 		render = (IRenderer) Container.inject(IRenderer.class);
 		world = (GameWorld) Container.inject(GameWorld.class);
+		physics = (IPhysics) Container.inject(IPhysics.class);
 	}
 	
 	/**
@@ -94,6 +97,8 @@ public abstract class Engine {
 		this.onUpdate();
 		
 		//update build-in parts
+		world.update();
+		physics.update();
 		render.update();
 		
 		//switch to another level if needed
