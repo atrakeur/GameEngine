@@ -2,7 +2,6 @@ package engine.physics;
 
 import javax.inject.Inject;
 
-import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
@@ -27,7 +26,7 @@ public class RigidbodyComponent extends Component {
 		BodyDef def = new BodyDef();
 		def.position = getPosition().toJBox2d();
 		def.type = BodyType.DYNAMIC;
-		def.angle = getRotation();
+		def.angle = -getRotation();
 		body = physics.addBody(def);
 		
 		PolygonShape rect = new PolygonShape();
@@ -58,13 +57,13 @@ public class RigidbodyComponent extends Component {
 	
 	public void setupToPhysics()
 	{
-		body.getTransform().set(getPosition().toJBox2d(), getRotation());
+		body.setTransform(getPosition().toJBox2d(), (float)Math.toRadians(getRotation()));
 	}
 	
 	public void setupFromPhysics()
 	{
 		getPosition().fromJBox2d(body.getPosition());
-		setRotation(body.getAngle());
+		setRotation((float)Math.toDegrees(body.getAngle()));
 	}
 
 	public void setRotation(float r)

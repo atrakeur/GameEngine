@@ -20,7 +20,7 @@ public class MainLevel implements ILevel{
 		world.addEntity(new CameraEntity());
 		Entity e = new DummyEntity();
 		e.addComponent(QuadRenderComponent.class);
-		e.getComponent(Transform.class).getPosition().set(40, 40);
+		e.getComponent(Transform.class).getPosition().set(35, 40);
 		e.getComponent(Transform.class).getScale().set(4, 4);
 		e.getComponent(Transform.class).setRotation(15);
 		e.addComponent(RigidbodyComponent.class);
@@ -36,7 +36,7 @@ public class MainLevel implements ILevel{
 		e = new DummyEntity();
 		e.addComponent(QuadRenderComponent.class);
 		e.getComponent(Transform.class).getPosition().set(40, -40);
-		e.getComponent(Transform.class).getScale().set(8, 8);
+		e.getComponent(Transform.class).getScale().set(16, 16);
 		e.addComponent(RigidbodyComponent.class);
 		e.getComponent(RigidbodyComponent.class).setStatic(true);
 		world.addEntity(e);
