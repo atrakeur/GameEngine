@@ -4,7 +4,7 @@ public interface IRenderer {
 
 	void create() throws Exception;
 
-	void update();
+	void update(float delta);
 
 	boolean isCloseRequested();
 

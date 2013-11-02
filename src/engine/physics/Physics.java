@@ -26,7 +26,7 @@ public class Physics implements IPhysics {
 	
 	public Physics()
 	{
-		Vec2 gravity = new Vec2(0.0f, -0.09f);
+		Vec2 gravity = new Vec2(0.0f, -9.1f);
 		physicsworld = new World(gravity.toJBox2d(), true);
 	}
 	
@@ -40,19 +40,21 @@ public class Physics implements IPhysics {
 		physicsworld.destroyBody(body);
 	}
 	
-	public void update()
+	public void update(float delta)
 	{
+		final int iterations = 5;
+		
 		//setup physics according to game world
 		Collection<RigidbodyComponent> rigidbodys = world.getComponents(RigidbodyComponent.class);
 		for(RigidbodyComponent rigidbody : rigidbodys)
 			rigidbody.setupToPhysics();
 		
 		//simulate world
-		float timeStep = 1.0f / 60.f;
+		float timeStep = delta / iterations;
 		int velocityIterations = 6;
 		int positionIterations = 2;
 		 
-		for (int i = 0; i < 60; ++i) {
+		for (int i = 0; i < iterations; ++i) {
 			physicsworld.step(timeStep, velocityIterations, positionIterations);
 		}
 		

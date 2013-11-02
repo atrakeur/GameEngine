@@ -2,6 +2,7 @@ package engine.entity;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
 import javax.inject.Singleton;
@@ -48,11 +49,10 @@ public class GameWorld {
 			e.destroy();
 	}
 	
-	public void update()
+	public void update(float delta)
 	{
-		for(Entity e : entities)
-		{
-			e.update();
+		for(int i = 0; i < entities.size(); i++) {
+			entities.get(i).update(delta);
 		}
 	}
 	

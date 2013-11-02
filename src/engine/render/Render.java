@@ -60,7 +60,7 @@ class Render implements IRenderer {
 		return Display.isCloseRequested();
 	}
 	
-	public void update()
+	public void update(float delta)
 	{
 		Collection<CameraComponent> cameras = world.getComponents(CameraComponent.class);
 		
@@ -89,13 +89,13 @@ class Render implements IRenderer {
 			objectRotation.setRotation(transform.getRotation());
 			
 			objectPosition.setup();
-			objectScale.setup();
 			objectRotation.setup();
+			objectScale.setup();
 			
 			render.render();
 			
-			objectRotation.teardown();
 			objectScale.teardown();
+			objectRotation.teardown();
 			objectPosition.teardown();
 		}
 		

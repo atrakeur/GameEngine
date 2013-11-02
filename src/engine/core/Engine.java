@@ -1,8 +1,6 @@
 package engine.core;
 
 import engine.entity.GameWorld;
-import net.usikkert.kouinject.DefaultInjector;
-import net.usikkert.kouinject.Injector;
 
 /**
  * Main class of the engine
@@ -13,6 +11,7 @@ import net.usikkert.kouinject.Injector;
  * @author Valentin 'Atrakeur' Letourneur <atrakeur@gmail.com>
  *
  */
+
 public abstract class Engine {
 	
 	private static Engine instance;
@@ -22,12 +21,15 @@ public abstract class Engine {
 	private IRenderer render;
 	private GameWorld world;
 	private IPhysics physics;
+	private ITime time;
 	
 	private ILevel level;
 	private ILevel nextlevel;
 	
 	public Engine() throws Exception
 	{
+		System.out.println(System.getProperty("java.version"));
+		
 		//Check then setup the instance
 		if(instance != null)
 			throw new IllegalStateException("Can't instantiate Engine class twice");
@@ -41,16 +43,25 @@ public abstract class Engine {
 		//start the engine
 		startEngine();
 		
+		time.startFrame();
+		time.endFrame();
+		
 		while(run)
 		{
+			time.startFrame();
+			
 			//need to quit?
 			if(render.isCloseRequested())
 				run = false;
 			
-			update();
+			update(time.getDelta());
+			
+			time.endFrame();
+			
+			System.out.println(time.getCurrentFps());
 			
 			//wait for the next pass
-			try {Thread.sleep(10);} catch(Exception e){}
+			try {Thread.sleep(time.getSleepTime());} catch(Exception e){}
 		}
 		
 		level.onQuit();
@@ -69,6 +80,7 @@ public abstract class Engine {
 		render = (IRenderer) Container.inject(IRenderer.class);
 		world = (GameWorld) Container.inject(GameWorld.class);
 		physics = (IPhysics) Container.inject(IPhysics.class);
+		time = Container.inject(ITime.class);
 	}
 	
 	/**
@@ -90,16 +102,19 @@ public abstract class Engine {
 	
 	/**
 	 * Called each frame to update
+	 * @param delta 
 	 */
-	private void update() {
+	private void update(float delta) {
 		//update all stuff
-		level.onUpdate();
-		this.onUpdate();
+		level.onUpdate(delta);
+		this.onUpdate(delta);
 		
 		//update build-in parts
-		world.update();
-		physics.update();
-		render.update();
+		world.update(delta);
+		
+		physics.update(delta);
+		
+		render.update(delta);
 		
 		//switch to another level if needed
 		if(nextlevel != null && nextlevel != level)
@@ -158,8 +173,9 @@ public abstract class Engine {
 	
 	/**
 	 * Called each frame on engine update
+	 * @param delta 
 	 */
-	public void onUpdate() {}
+	public void onUpdate(float delta) {}
 	
 	/**
 	 * Called jst before engine exiting

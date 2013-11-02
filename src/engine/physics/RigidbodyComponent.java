@@ -15,10 +15,20 @@ import engine.math.Vec2;
 @net.usikkert.kouinject.annotation.Component
 public class RigidbodyComponent extends Component {
 	
+	protected Vec2 velocity;
+	protected boolean dynamic = true;
+	protected float density = 1;
+	protected float friction = 0.5f;
+	protected float restitution = 0.01f;
+	
 	@Inject
 	private Physics physics;
 	
 	private Body body;
+	
+	public RigidbodyComponent() {
+		velocity = new Vec2();
+	}
 	
 	public void onAttach() {
 		super.onAttach();
@@ -26,17 +36,24 @@ public class RigidbodyComponent extends Component {
 		BodyDef def = new BodyDef();
 		def.position = getPosition().toJBox2d();
 		def.type = BodyType.DYNAMIC;
-		def.angle = -getRotation();
+		def.angle = -(float)Math.toRadians(getRotation());
 		body = physics.addBody(def);
+		
+		resetFixture();
+	}
+	
+	public void resetFixture() {
+		while(body.m_fixtureCount > 0)
+			body.destroyFixture(body.getFixtureList());
 		
 		PolygonShape rect = new PolygonShape();
 		rect.setAsBox(getScale().x/2, getScale().y/2);
 		
 		FixtureDef fd = new FixtureDef();
 		fd.shape = rect;
-		fd.density = 0.8f;
-		fd.friction = 0.5f;       
-		fd.restitution = 0.01f;
+		fd.density = density;
+		fd.friction = friction;       
+		fd.restitution = restitution;
 		
 		body.createFixture(fd);
 	}
@@ -47,23 +64,26 @@ public class RigidbodyComponent extends Component {
 		physics.removeBody(body);
 	}
 	
-	public void setStatic(boolean isStatic)
+	public void setDynamic(boolean dynamic)
 	{
-		if(isStatic)
+		this.dynamic = dynamic;
+		if(!dynamic)
 			body.setType(BodyType.STATIC);
 		else
 			body.setType(BodyType.DYNAMIC);
 	}
 	
 	public void setupToPhysics()
-	{
+	{	
 		body.setTransform(getPosition().toJBox2d(), (float)Math.toRadians(getRotation()));
+		body.m_linearVelocity.set(velocity.toJBox2d());
 	}
 	
 	public void setupFromPhysics()
 	{
 		getPosition().fromJBox2d(body.getPosition());
 		setRotation((float)Math.toDegrees(body.getAngle()));
+		velocity.fromJBox2d(body.m_linearVelocity);
 	}
 
 	public void setRotation(float r)
@@ -84,6 +104,41 @@ public class RigidbodyComponent extends Component {
 	public Vec2 getPosition()
 	{
 		return getParent().getComponent(Transform.class).getPosition();
+	}
+	
+	public Vec2 getVelocity()
+	{
+		return velocity;
+	}
+
+	public float getDensity() {
+		return density;
+	}
+
+	public void setDensity(float density) {
+		this.density = density;
+		
+		resetFixture();
+	}
+
+	public float getFriction() {
+		return friction;
+	}
+
+	public void setFriction(float friction) {
+		this.friction = friction;
+		
+		resetFixture();
+	}
+
+	public float getRestitution() {
+		return restitution;
+	}
+
+	public void setRestitution(float restitution) {
+		this.restitution = restitution;
+		
+		resetFixture();
 	}
 
 }

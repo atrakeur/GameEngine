@@ -4,7 +4,7 @@ public interface ILevel {
 	
 	public void onStart();
 	
-	public void onUpdate();
+	public void onUpdate(float delta);
 	
 	public void onQuit();
 
