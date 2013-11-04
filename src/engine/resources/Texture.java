@@ -11,27 +11,39 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import engine.gl.GLUtility;
+
 public class Texture implements IResource {
 	
-	String path;
 	boolean ready;
 	boolean loading;
 	
-	int textureID;
-	BufferedImage image;
+	int textureID = -1;
+	
+	private String path;
+	
+	private BufferedImage image;
+	
+	private int[] imageData;
+	private int width = -1;
+	private int height = -1;
 	
 	protected Texture(String path) {
-		this(path, null);
+		this.path = path;
 	}
 	
 	protected Texture(String path, BufferedImage image) {
-		this.path = path;
+		this(path);
 		this.image = image;
-		ready = false;
-		loading = false;
 	}
-
-	@Override
+	
+	protected Texture(String path, int[] imageData, int width, int height) {
+		this(path);
+		this.imageData = imageData;
+		this.width = width;
+		this.height = height;
+	}
+	
 	public String getPath() {
 		return path;
 	}
@@ -52,41 +64,18 @@ public class Texture implements IResource {
 	
 	public void load() throws IOException {
 		loading = true;
+		ready = false;
 		
-		final int BYTES_PER_PIXELS = 4; //4 = RGBA, 3 = RGB
-		
-		if(image == null) {
+		if(image != null) {
+			textureID = GLUtility.loadImage(image);
+		}
+		else if(imageData != null) {
+			textureID = GLUtility.loadImage(imageData, width, height);
+		}
+		else {
 			image = ImageIO.read(new File(path));
+			textureID = GLUtility.loadImage(image);
 		}
-		
-		int[] pixels = new int[image.getWidth() * image.getHeight()];
-		image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
-		
-		ByteBuffer buffer = BufferUtils.createByteBuffer(image.getWidth() * image.getHeight() * BYTES_PER_PIXELS);
-		
-		for(int i = 0; i < image.getHeight(); i++) {
-			for(int j = 0; j < image.getWidth(); j++) {
-				int pixel = pixels[i * image.getWidth() + j];
-				
-				buffer.put((byte) ((pixel >> 16) & 0xFF));
-				buffer.put((byte) ((pixel >> 8) & 0xFF));
-				buffer.put((byte) ((pixel) & 0xFF));
-				buffer.put((byte) ((pixel >> 24) & 0xFF));
-			}
-		}
-		
-		buffer.flip();
-		
-		textureID = GL11.glGenTextures();
-		
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
-		
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-		
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, image.getWidth(), image.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
 		
 		loading = false;
 		ready = true;

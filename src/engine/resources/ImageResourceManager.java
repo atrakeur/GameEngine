@@ -29,9 +29,7 @@ public class ImageResourceManager implements IResourceManager<Texture> {
 		refCount = new HashMap<String, Integer>();
 		
 		//load default image
-		BufferedImage image = new BufferedImage(6, 6, BufferedImage.TYPE_4BYTE_ABGR);
-		image.setRGB(0, 0, image.getWidth(), image.getHeight(), DEFAULT_IMAGE_RASTER, 0, image.getWidth());
-		defaultTexture = new Texture("default", image);
+		defaultTexture = new Texture("default", DEFAULT_IMAGE_RASTER, 6, 6);
 		try {
 			defaultTexture.load();
 		} catch (IOException e) {
