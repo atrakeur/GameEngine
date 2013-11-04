@@ -11,7 +11,7 @@ import net.usikkert.kouinject.annotation.Component;
 @Singleton
 public class ImageResourceManager implements IResourceManager<Texture> {
 	
-	public static final int[] DEFAULT_IMAGE_RASTER = {
+	public static final int[] DEFAULT_IMAGE_DATA = {
                   0xFF00FF, 0xFF00FF, 0xFF00FF, 0xAA22AA, 0xAA22AA, 0xAA22AA,
                   0xFF00FF, 0xFF00FF, 0xFF00FF, 0xAA22AA, 0xAA22AA, 0xAA22AA,
                   0xFF00FF, 0xFF00FF, 0xFF00FF, 0xAA22AA, 0xAA22AA, 0xAA22AA,
@@ -19,6 +19,7 @@ public class ImageResourceManager implements IResourceManager<Texture> {
                   0xAA22AA, 0xAA22AA, 0xAA22AA, 0xFF00FF, 0xFF00FF, 0xFF00FF,
                   0xAA22AA, 0xAA22AA, 0xAA22AA, 0xFF00FF, 0xFF00FF, 0xFF00FF,
 	};
+	public static final int DEFAULT_IMAGE_SIZE = 6;
 	
 	private Texture defaultTexture;
 	private HashMap<String, Texture> textures;
@@ -29,7 +30,7 @@ public class ImageResourceManager implements IResourceManager<Texture> {
 		refCount = new HashMap<String, Integer>();
 		
 		//load default image
-		defaultTexture = new Texture("default", DEFAULT_IMAGE_RASTER, 6, 6);
+		defaultTexture = new Texture("default", DEFAULT_IMAGE_DATA, DEFAULT_IMAGE_SIZE, DEFAULT_IMAGE_SIZE);
 		try {
 			defaultTexture.load();
 		} catch (IOException e) {
