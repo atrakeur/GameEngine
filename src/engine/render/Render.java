@@ -12,6 +12,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
+import engine.core.Engine;
 import engine.core.IRenderer;
 import engine.debug.IProfiler;
 import engine.entity.GameWorld;
@@ -52,7 +53,18 @@ class Render implements IRenderer {
 	public void create() throws LWJGLException
 	{
 		//TODO make it cross platform
-		System.setProperty("org.lwjgl.librarypath", new File("native/linux").getAbsolutePath());
+		String path = "native/";
+		if(Engine.isWindows()) {
+			path += "windows";
+		}
+		if(Engine.isMac()) {
+			path += "macosx";
+		}
+		if(Engine.isLinux()) {
+			path += "linux";
+		}
+		
+		System.setProperty("org.lwjgl.librarypath", new File(path).getAbsolutePath());
 		Display.setDisplayMode(new DisplayMode((int)resolution.x, (int)resolution.y));
 		Display.setTitle("Test");
 		Display.create();
