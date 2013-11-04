@@ -1,5 +1,6 @@
 package engine.core;
 
+import engine.debug.IProfiler;
 import engine.entity.GameWorld;
 
 /**
@@ -22,14 +23,13 @@ public abstract class Engine {
 	private GameWorld world;
 	private IPhysics physics;
 	private ITime time;
+	private IProfiler profiler;
 	
 	private ILevel level;
 	private ILevel nextlevel;
 	
 	public Engine() throws Exception
 	{
-		System.out.println(System.getProperty("java.version"));
-		
 		//Check then setup the instance
 		if(instance != null)
 			throw new IllegalStateException("Can't instantiate Engine class twice");
@@ -48,6 +48,8 @@ public abstract class Engine {
 		
 		while(run)
 		{
+			profiler.start("/");
+			
 			time.startFrame();
 			
 			//need to quit?
@@ -56,17 +58,19 @@ public abstract class Engine {
 			
 			update(time.getDelta());
 			
+			profiler.start("/Sleep");
 			time.endFrame();
-			
-			System.out.println(time.getCurrentFps());
-			
-			//wait for the next pass
 			try {Thread.sleep(time.getSleepTime());} catch(Exception e){}
+			profiler.end("/Sleep");
+			
+			profiler.end("/");
 		}
 		
 		level.onQuit();
 		this.onQuit();
 		render.destroy();
+		
+		System.out.println(profiler.toString());
 	}
 	
 	/******************************************************
@@ -81,6 +85,7 @@ public abstract class Engine {
 		world = (GameWorld) Container.inject(GameWorld.class);
 		physics = (IPhysics) Container.inject(IPhysics.class);
 		time = Container.inject(ITime.class);
+		profiler = Container.inject(IProfiler.class);
 	}
 	
 	/**
@@ -106,24 +111,36 @@ public abstract class Engine {
 	 */
 	private void update(float delta) {
 		//update all stuff
+		profiler.start("/Level/Update");
 		level.onUpdate(delta);
 		this.onUpdate(delta);
+		profiler.end("/Level/Update");
 		
 		//update build-in parts
+		profiler.start("/World/");
 		world.update(delta);
+		profiler.end("/World/");
 		
+		profiler.start("/Physics/");
 		physics.update(delta);
+		profiler.end("/Physics/");
 		
+		profiler.start("/Render/");
 		render.update(delta);
+		profiler.end("/Render/");
 		
 		//switch to another level if needed
 		if(nextlevel != null && nextlevel != level)
 		{
+			profiler.start("/Level/Change");
+			
 			if(level != null)
 				level.onQuit();
 			world.clear();
 			level = nextlevel;
 			level.onStart();
+			
+			profiler.end("/Level/Change");
 		}
 	}
 	

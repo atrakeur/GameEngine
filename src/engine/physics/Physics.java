@@ -12,6 +12,7 @@ import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.World;
 
 import engine.core.IPhysics;
+import engine.debug.IProfiler;
 import engine.entity.GameWorld;
 import engine.math.Vec2;
 
@@ -21,6 +22,9 @@ public class Physics implements IPhysics {
 	
 	@Inject
 	GameWorld world;
+	
+	@Inject
+	IProfiler profiler;
 	
 	World physicsworld;
 	
@@ -44,11 +48,14 @@ public class Physics implements IPhysics {
 	{
 		final int iterations = 5;
 		
+		profiler.start("/Physics/SetupObjects");
 		//setup physics according to game world
 		Collection<RigidbodyComponent> rigidbodys = world.getComponents(RigidbodyComponent.class);
 		for(RigidbodyComponent rigidbody : rigidbodys)
 			rigidbody.setupToPhysics();
+		profiler.end("/Physics/SetupObjects");
 		
+		profiler.start("/Physics/Simulate");
 		//simulate world
 		float timeStep = delta / iterations;
 		int velocityIterations = 6;
@@ -57,11 +64,14 @@ public class Physics implements IPhysics {
 		for (int i = 0; i < iterations; ++i) {
 			physicsworld.step(timeStep, velocityIterations, positionIterations);
 		}
+		profiler.end("/Physics/Simulate");
 		
+		profiler.start("/Physics/TearDown");
 		//setup world from physics
 		rigidbodys = world.getComponents(RigidbodyComponent.class);
 		for(RigidbodyComponent rigidbody : rigidbodys)
 			rigidbody.setupFromPhysics();
+		profiler.end("/Physics/TearDown");
 	}
 
 }

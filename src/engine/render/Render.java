@@ -13,6 +13,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
 import engine.core.IRenderer;
+import engine.debug.IProfiler;
 import engine.entity.GameWorld;
 import engine.entity.components.Transform;
 import engine.gl.GLRotate;
@@ -35,6 +36,8 @@ class Render implements IRenderer {
 	
 	@Inject
 	private GameWorld world;
+	@Inject
+	private IProfiler profiler;
 	
 	private final Vec2 resolution = new Vec2(800, 600);
 	
@@ -62,6 +65,8 @@ class Render implements IRenderer {
 	
 	public void update(float delta)
 	{
+		profiler.start("/Render/SetCameras");
+		
 		Collection<CameraComponent> cameras = world.getComponents(CameraComponent.class);
 		
 		if(cameras.size() == 0)
@@ -77,11 +82,18 @@ class Render implements IRenderer {
 			glMatrixMode(GL11.GL_MODELVIEW);
 		}
 		
+		profiler.end("/Render/SetCameras");
+		
+		profiler.start("/Render/Clear");
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_TEXTURE_2D);
+		profiler.end("/Render/Clear");
 		
+		profiler.start("/Render/GetRenderables");
 		Collection<RenderComponent> renderables = world.getComponents(RenderComponent.class);
+		profiler.end("/Render/GetRenderables");
 		
+		profiler.start("/Render/DisplayRenderables");
 		for(RenderComponent render : renderables)
 		{	
 			Transform transform = render.getParent().getComponent(Transform.class);
@@ -99,8 +111,11 @@ class Render implements IRenderer {
 			objectRotation.teardown();
 			objectPosition.teardown();
 		}
+		profiler.end("/Render/DisplayRenderables");
 		
+		profiler.start("/Render/Swap");
 		Display.update();
+		profiler.end("/Render/Swap");
 	}
 	
 	public void destroy()
